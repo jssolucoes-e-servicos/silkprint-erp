@@ -1,0 +1,113 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+}
+
+model Cliente {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  nome      String
+  documento String?     @unique
+  email     String?
+  telefone  String?
+  orcamentos Orcamento[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model Produto {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  nome        String
+  descricao   String?
+  precoCusto  Float
+  precoVenda  Float
+  categoria   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Orcamento {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  numero      String         @unique
+  clienteId   String?        @db.ObjectId
+  cliente     Cliente?       @relation(fields: [clienteId], references: [id])
+  status      String         @default("Pendente")
+  dataEmissao DateTime       @default(now())
+  itens       ItemOrcamento[]
+  custoTotal  Float
+  markup      Float
+  frete       Float          @default(0)
+  descontos   Float          @default(0)
+  totalFinal  Float
+  observacoes String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model ItemOrcamento {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  orcamentoId    String    @db.ObjectId
+  orcamento      Orcamento @relation(fields: [orcamentoId], references: [id], onDelete: Cascade)
+  produtoId      String?
+  produtoNome    String
+  quantidade     Int
+  especificacoes String?
+  custoUnitario  Float
+  precoSugerido  Float
+  acabamentos    String?   
+}
+
+model Lead {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  company   String
+  email     String
+  phone     String
+  status    String   @default("Novo")
+  source    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContaPagar {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  description String
+  supplier    String
+  dueDate     DateTime
+  amount      Float
+  status      String   @default("Pendente") // Pendente, Pago, Atrasado
+  category    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ContaReceber {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  description String
+  client      String
+  dueDate     DateTime
+  amount      Float
+  status      String   @default("Pendente") // Pendente, Recebido, Atrasado
+  category    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Tarefa {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  customer  String
+  priority  String
+  deadline  String
+  status    String   @default("Pendente")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

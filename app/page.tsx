@@ -39,7 +39,7 @@ import { getDashboardStats } from '@/app/actions/dashboard'
 export default function DashboardPage() {
   const { data: stats, isLoading } = useSWR('dashboard-stats', getDashboardStats)
 
-  const recentOrders = stats?.recentOrcamentos.map(orc => ({
+  const recentOrders = stats?.recentOrcamentos.map((orc: any) => ({
     id: orc.numero,
     customer: orc.cliente?.nome || "Consumidor Final",
     total: `R$ ${orc.totalFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
@@ -144,7 +144,7 @@ export default function DashboardPage() {
                 <p className="text-sm text-muted-foreground">Carregando...</p>
               ) : stats?.recentClientes.length === 0 ? (
                 <p className="text-sm text-muted-foreground">Nenhum cliente cadastrado.</p>
-              ) : stats?.recentClientes.map((cliente) => (
+              ) : stats?.recentClientes.map((cliente: any) => (
                 <div key={cliente.id} className="flex items-center">
                   <Avatar className="h-9 w-9">
                     <AvatarFallback>{cliente.nome.substring(0, 2)}</AvatarFallback>
@@ -177,7 +177,7 @@ export default function DashboardPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {recentOrders.map((order) => (
+              {recentOrders.map((order: any) => (
                 <TableRow key={order.id}>
                   <TableCell className="font-medium">{order.id}</TableCell>
                   <TableCell>{order.customer}</TableCell>

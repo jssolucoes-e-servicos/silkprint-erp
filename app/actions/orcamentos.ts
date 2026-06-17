@@ -15,9 +15,9 @@ export async function getOrcamentos() {
       }
     })
     
-    return orcamentos.map(orc => ({
+    return orcamentos.map((orc: any) => ({
       ...orc,
-      itens: orc.itens.map(item => ({
+      itens: orc.itens.map((item: any) => ({
         ...item,
         acabamentos: item.acabamentos ? JSON.parse(item.acabamentos) : []
       }))
@@ -134,9 +134,9 @@ export async function getClienteById(id: string) {
 
     return {
       ...cliente,
-      orcamentos: cliente.orcamentos.map(orc => ({
+      orcamentos: cliente.orcamentos.map((orc: any) => ({
         ...orc,
-        itens: orc.itens.map(item => ({
+        itens: orc.itens.map((item: any) => ({
           ...item,
           acabamentos: item.acabamentos ? JSON.parse(item.acabamentos) : []
         }))

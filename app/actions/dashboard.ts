@@ -27,7 +27,7 @@ export async function getDashboardStats() {
       })
     ])
 
-    const totalReceita = contasReceber.reduce((acc, curr) => acc + curr.amount, 0)
+    const totalReceita = contasReceber.reduce((acc: number, curr: { amount: number }) => acc + curr.amount, 0)
 
     return {
       totalClientes,

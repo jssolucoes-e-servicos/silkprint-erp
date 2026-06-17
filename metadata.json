@@ -1,5 +1,8 @@
 {
-  "name": "GraphERP",
-  "description": "Sistema ERP completo para gestão de orçamentos, produção, estoque e financeiro.",
-  "requestFramePermissions": []
+  "name": "Silkprint ERP",
+  "description": "Sistema de gestão ERP para Silkprint com integração de leads, orçamentos e faturamento.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

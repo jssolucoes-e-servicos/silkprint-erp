@@ -1,23 +1,30 @@
-import type {Metadata} from 'next';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
-import { Geist } from "next/font/google";
-import { cn } from "@/lib/utils";
-import { Toaster } from '@/components/ui/sonner';
-import { LayoutWrapper } from '@/components/layout-wrapper';
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-sans',
+});
 
-export const metadata: Metadata = {
-  title: 'GraphERP - Sistema de Gestão',
-  description: 'Sistema ERP completo para gestão de orçamentos, produção, estoque e financeiro.',
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+});
+
+export const metadata = {
+  title: 'Silkprint ERP',
+  description: 'Sistema ERP para Silkprint',
 };
 
-export default function RootLayout({children}: {children: React.ReactNode}) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="pt-BR" className={cn("font-sans", geist.variable)}>
-      <body suppressHydrationWarning className="min-h-screen bg-background">
-        <LayoutWrapper>{children}</LayoutWrapper>
-        <Toaster />
+    <html lang="pt-BR" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <body className="font-sans antialiased bg-zinc-950 text-zinc-100 min-h-screen">
+        {children}
       </body>
     </html>
   );

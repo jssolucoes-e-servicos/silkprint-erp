@@ -1,44 +1,52 @@
-'use server'
+'use server';
 
-import prisma from '@/lib/prisma'
-import { revalidatePath } from 'next/cache'
+import { prisma } from '@/lib/prisma';
+import { revalidatePath } from 'next/cache';
 
 export async function getLeads() {
   try {
-    const leads = await prisma.lead.findMany({
+    return await prisma.lead.findMany({
       orderBy: { createdAt: 'desc' }
-    })
-    return leads
+    });
   } catch (error) {
-    console.error('Error fetching leads:', error)
-    return []
+    console.error('Error fetching leads:', error);
+    return [];
   }
 }
 
-export async function createLead(data: any) {
+export async function createLead(data: { nome: string; empresa?: string; email?: string; telefone?: string; status?: string; origem?: string }) {
   try {
     const lead = await prisma.lead.create({
-      data
-    })
-    revalidatePath('/leads')
-    return { success: true, data: lead }
-  } catch (error) {
-    console.error('Error creating lead:', error)
-    return { success: false, error: 'Falha ao criar lead' }
+      data: {
+        nome: data.nome,
+        empresa: data.empresa || '',
+        email: data.email || '',
+        telefone: data.telefone || '',
+        status: data.status || 'Novo',
+        origem: data.origem || 'Direto'
+      }
+    });
+    revalidatePath('/leads');
+    revalidatePath('/');
+    return { success: true, lead };
+  } catch (error: any) {
+    console.error('Error creating lead:', error);
+    return { success: false, error: error.message };
   }
 }
 
 export async function updateLeadStatus(id: string, status: string) {
   try {
-    await prisma.lead.update({
+    const lead = await prisma.lead.update({
       where: { id },
       data: { status }
-    })
-    revalidatePath('/leads')
-    return { success: true }
-  } catch (error) {
-    console.error('Error updating lead status:', error)
-    return { success: false, error: 'Falha ao atualizar status' }
+    });
+    revalidatePath('/leads');
+    revalidatePath('/');
+    return { success: true, lead };
+  } catch (error: any) {
+    console.error('Error updating lead status:', error);
+    return { success: false, error: error.message };
   }
 }
 
@@ -46,11 +54,12 @@ export async function deleteLead(id: string) {
   try {
     await prisma.lead.delete({
       where: { id }
-    })
-    revalidatePath('/leads')
-    return { success: true }
-  } catch (error) {
-    console.error('Error deleting lead:', error)
-    return { success: false, error: 'Falha ao excluir lead' }
+    });
+    revalidatePath('/leads');
+    revalidatePath('/');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Error deleting lead:', error);
+    return { success: false, error: error.message };
   }
 }

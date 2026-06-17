@@ -1,82 +1,102 @@
-'use server'
+'use server';
 
-import prisma from '@/lib/prisma'
-import { revalidatePath } from 'next/cache'
+import { prisma } from '@/lib/prisma';
+import { revalidatePath } from 'next/cache';
 
 export async function getOrcamentos() {
   try {
-    const orcamentos = await prisma.orcamento.findMany({
-      include: {
-        cliente: true,
-        itens: true
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    })
-    
-    return orcamentos.map((orc: any) => ({
-      ...orc,
-      itens: orc.itens.map((item: any) => ({
-        ...item,
-        acabamentos: item.acabamentos ? JSON.parse(item.acabamentos) : []
-      }))
-    }))
+    return await prisma.orcamento.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
   } catch (error) {
-    console.error('Error fetching orcamentos:', error)
-    return []
+    console.error('Error fetching orcamentos:', error);
+    return [];
   }
 }
 
-export async function createOrcamento(data: any) {
+export async function createOrcamento(data: {
+  cliente: string;
+  documento?: string;
+  telefone?: string;
+  email?: string;
+  itens: Array<{ descricao: string; qtd: number; preco: number }>;
+  valorTotal: number;
+  status?: string;
+}) {
   try {
-    const lastOrc = await prisma.orcamento.findFirst({
-      orderBy: { numero: 'desc' }
-    })
-    
-    let nextNumber = 1
-    if (lastOrc) {
-      const lastNum = parseInt(lastOrc.numero.split('-').pop() || '0')
-      nextNumber = lastNum + 1
-    }
-    
-    const numero = `ORC-2024-${nextNumber.toString().padStart(3, '0')}`
-
-    const { itens, ...rest } = data;
-
     const orcamento = await prisma.orcamento.create({
       data: {
-        ...rest,
-        numero,
-        dataEmissao: new Date(),
-        itens: {
-          create: itens.map((item: any) => ({
-            ...item,
-            acabamentos: JSON.stringify(item.acabamentos || [])
-          }))
-        }
+        cliente: data.cliente,
+        documento: data.documento || '',
+        telefone: data.telefone || '',
+        email: data.email || '',
+        itens: data.itens,
+        valorTotal: data.valorTotal,
+        status: data.status || 'PENDENTE'
       }
-    })
-    
-    revalidatePath('/orcamentos')
-    return { success: true, data: orcamento }
-  } catch (error) {
-    console.error('Error creating orcamento:', error)
-    return { success: false, error: 'Falha ao criar orçamento' }
+    });
+
+    // If initial status is APROVADO, automatically create accounts receivable entry
+    if (data.status === 'APROVADO') {
+      const dataVencimento = new Date();
+      dataVencimento.setDate(dataVencimento.getDate() + 30); // 30-day default term
+
+      await prisma.contasReceber.create({
+        data: {
+          cliente: data.cliente,
+          descricao: `Orçamento #${orcamento.id.substring(18)}`,
+          valor: data.valorTotal,
+          dataVencimento,
+          status: 'PENDENTE'
+        }
+      });
+    }
+
+    revalidatePath('/');
+    revalidatePath('/orcamentos');
+    return { success: true, orcamento };
+  } catch (error: any) {
+    console.error('Error creating orcamento:', error);
+    return { success: false, error: error.message };
   }
 }
 
 export async function updateOrcamentoStatus(id: string, status: string) {
   try {
-    await prisma.orcamento.update({
+    const orcamento = await prisma.orcamento.update({
       where: { id },
       data: { status }
-    })
-    revalidatePath('/orcamentos')
-    return { success: true }
-  } catch (error) {
-    console.error('Error updating orcamento status:', error)
-    return { success: false, error: 'Falha ao atualizar status' }
+    });
+
+    // If status is changed to APROVADO, create accounts receivable entry
+    if (status === 'APROVADO') {
+      const dataVencimento = new Date();
+      dataVencimento.setDate(dataVencimento.getDate() + 30); // 30 days due
+
+      // Check if already exists first
+      const exists = await prisma.contasReceber.findFirst({
+        where: { descricao: `Orçamento #${id.substring(18)}` }
+      });
+
+      if (!exists) {
+        await prisma.contasReceber.create({
+          data: {
+            cliente: orcamento.cliente,
+            descricao: `Orçamento #${id.substring(18)}`,
+            valor: orcamento.valorTotal,
+            dataVencimento,
+            status: 'PENDENTE'
+          }
+        });
+      }
+    }
+
+    revalidatePath('/');
+    revalidatePath('/orcamentos');
+    return { success: true, orcamento };
+  } catch (error: any) {
+    console.error('Error updating orcamento status:', error);
+    return { success: false, error: error.message };
   }
 }
 
@@ -84,117 +104,22 @@ export async function deleteOrcamento(id: string) {
   try {
     await prisma.orcamento.delete({
       where: { id }
-    })
-    revalidatePath('/orcamentos')
-    return { success: true }
-  } catch (error) {
-    console.error('Error deleting orcamento:', error)
-    return { success: false, error: 'Falha ao excluir orçamento' }
-  }
-}
-
-export async function getClientes() {
-  try {
-    const clientes = await prisma.cliente.findMany({
-      orderBy: { nome: 'asc' }
-    })
-    return clientes
-  } catch (error) {
-    console.error('Error fetching clientes:', error)
-    return []
-  }
-}
-
-export async function createCliente(data: any) {
-  try {
-    const cliente = await prisma.cliente.create({
-      data
-    })
-    revalidatePath('/clientes')
-    return { success: true, data: cliente }
-  } catch (error) {
-    console.error('Error creating cliente:', error)
-    return { success: false, error: 'Falha ao criar cliente' }
-  }
-}
-
-export async function getClienteById(id: string) {
-  try {
-    const cliente = await prisma.cliente.findUnique({
-      where: { id },
-      include: {
-        orcamentos: {
-          include: { itens: true },
-          orderBy: { createdAt: 'desc' }
-        }
-      }
-    })
+    });
     
-    if (!cliente) return null;
-
-    return {
-      ...cliente,
-      orcamentos: cliente.orcamentos.map((orc: any) => ({
-        ...orc,
-        itens: orc.itens.map((item: any) => ({
-          ...item,
-          acabamentos: item.acabamentos ? JSON.parse(item.acabamentos) : []
-        }))
-      }))
+    // Also clean up any accounts receivable generated for this
+    try {
+      await prisma.contasReceber.deleteMany({
+        where: { descricao: `Orçamento #${id.substring(18)}` }
+      });
+    } catch (e) {
+      console.warn('Could not delete associated account receivable:', e);
     }
-  } catch (error) {
-    console.error('Error fetching cliente:', error)
-    return null
-  }
-}
 
-export async function deleteCliente(id: string) {
-  try {
-    await prisma.cliente.delete({
-      where: { id }
-    })
-    revalidatePath('/clientes')
-    return { success: true }
-  } catch (error) {
-    console.error('Error deleting cliente:', error)
-    return { success: false, error: 'Falha ao excluir cliente' }
-  }
-}
-
-export async function getProdutos() {
-  try {
-    const produtos = await prisma.produto.findMany({
-      orderBy: { nome: 'asc' }
-    })
-    return produtos
-  } catch (error) {
-    console.error('Error fetching produtos:', error)
-    return []
-  }
-}
-
-export async function createProduto(data: any) {
-  try {
-    const produto = await prisma.produto.create({
-      data
-    })
-    revalidatePath('/produtos')
-    return { success: true, data: produto }
-  } catch (error) {
-    console.error('Error creating produto:', error)
-    return { success: false, error: 'Falha ao criar produto' }
-  }
-}
-
-export async function deleteProduto(id: string) {
-  try {
-    await prisma.produto.delete({
-      where: { id }
-    })
-    revalidatePath('/produtos')
-    return { success: true }
-  } catch (error) {
-    console.error('Error deleting produto:', error)
-    return { success: false, error: 'Falha ao excluir produto' }
+    revalidatePath('/');
+    revalidatePath('/orcamentos');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Error deleting orcamento:', error);
+    return { success: false, error: error.message };
   }
 }

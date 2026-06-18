@@ -46,6 +46,7 @@ const availableFinishes = [
   { id: 'hole', label: 'Furo Superior (+R$ 0,01/un)', price: 0.01 },
 ]
 
+// Force re-evaluation check
 import { createOrcamento } from '@/app/actions/orcamentos'
 import { getClientes } from '@/app/actions/clientes'
 import useSWR from 'swr'

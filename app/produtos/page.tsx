@@ -37,6 +37,7 @@ import {
 import Link from 'next/link'
 import { toast } from "sonner"
 import useSWR from 'swr'
+// Force re-evaluation check
 import { getProdutos, deleteProduto as deleteProdutoAction } from '@/app/actions/produtos'
 
 type Produto = {

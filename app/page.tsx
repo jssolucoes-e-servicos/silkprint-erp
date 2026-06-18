@@ -164,7 +164,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6" id="dashboard-root">
+    <div className="max-w-7xl mx-auto space-y-6" id="dashboard-root">
       {/* Upper Navigation Header */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800 pb-5" id="header-id">
         <div>

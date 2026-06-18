@@ -1,21 +1,14 @@
 import { PrismaClient } from '@prisma/client';
 
-let prismaInstance: PrismaClient | null = null;
+const prismaClientSingleton = () => {
+  return new PrismaClient();
+};
 
-export function getPrisma(): PrismaClient {
-  if (!prismaInstance) {
-    prismaInstance = new PrismaClient();
-  }
-  return prismaInstance;
-}
+declare const globalThis: {
+  prismaGlobal: ReturnType<typeof prismaClientSingleton>;
+} & typeof global;
 
-export const prisma = new Proxy({} as PrismaClient, {
-  get(_, propKey) {
-    const instance = getPrisma();
-    const value = (instance as any)[propKey];
-    if (typeof value === 'function') {
-      return value.bind(instance);
-    }
-    return value;
-  }
-});
+export const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
+
+if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma;
+

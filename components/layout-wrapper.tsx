@@ -13,9 +13,9 @@ export function LayoutWrapper({children}: {children: React.ReactNode}) {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen w-screen overflow-hidden bg-background text-foreground">
       <Sidebar />
-      <div className="flex flex-col flex-1 w-full">
+      <div className="flex flex-col flex-1 min-w-0 h-full">
         <Header />
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           {children}

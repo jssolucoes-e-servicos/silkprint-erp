@@ -37,7 +37,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from "sonner"
 import { Switch } from "@/components/ui/switch"
 import Image from 'next/image'
-import { createProduto } from '@/app/actions/orcamentos'
+import { createProduto } from '@/app/actions/produtos'
 
 export default function NovoProdutoPage() {
   const router = useRouter()

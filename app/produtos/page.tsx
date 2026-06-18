@@ -37,7 +37,7 @@ import {
 import Link from 'next/link'
 import { toast } from "sonner"
 import useSWR from 'swr'
-import { getProdutos, deleteProduto as deleteProdutoAction } from '@/app/actions/orcamentos'
+import { getProdutos, deleteProduto as deleteProdutoAction } from '@/app/actions/produtos'
 
 type Produto = {
   id: string

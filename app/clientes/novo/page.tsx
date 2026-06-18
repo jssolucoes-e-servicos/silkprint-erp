@@ -11,7 +11,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
-import { createCliente } from "@/app/actions/orcamentos"
+import { createCliente } from "@/app/actions/clientes"
 import { useState } from "react"
 
 export default function NovoClientePage() {

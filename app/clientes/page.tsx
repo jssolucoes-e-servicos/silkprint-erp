@@ -35,7 +35,7 @@ import {
 import Link from 'next/link'
 import { toast } from "sonner"
 import useSWR from 'swr'
-import { getClientes, deleteCliente as deleteClienteAction } from '@/app/actions/orcamentos'
+import { getClientes, deleteCliente as deleteClienteAction } from '@/app/actions/clientes'
 
 type Cliente = {
   id: string

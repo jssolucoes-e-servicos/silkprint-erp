@@ -21,7 +21,7 @@ import Link from 'next/link'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import useSWR from 'swr'
-import { getClienteById } from '@/app/actions/orcamentos'
+import { getClienteById } from '@/app/actions/clientes'
 
 export default function PerfilClientePage() {
   const params = useParams()

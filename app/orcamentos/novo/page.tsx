@@ -46,7 +46,7 @@ const availableFinishes = [
   { id: 'hole', label: 'Furo Superior (+R$ 0,01/un)', price: 0.01 },
 ]
 
-import { createOrcamento, getClientes } from '@/app/actions/orcamentos'
+import { createOrcamento, getClientes } from '@/app/actions/clientes'
 import useSWR from 'swr'
 
 export default function NovoOrcamentoPage() {

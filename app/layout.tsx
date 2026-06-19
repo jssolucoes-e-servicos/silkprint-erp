@@ -24,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="font-sans antialiased bg-zinc-950 text-zinc-100 min-h-screen">
+      <body className="font-sans antialiased min-h-screen">
         <LayoutWrapper>
           {children}
         </LayoutWrapper>

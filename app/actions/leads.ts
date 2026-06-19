@@ -14,16 +14,16 @@ export async function getLeads() {
   }
 }
 
-export async function createLead(data: { nome: string; empresa?: string; email?: string; telefone?: string; status?: string; origem?: string }) {
+export async function createLead(data: { name: string; company?: string; email?: string; phone?: string; status?: string; source?: string }) {
   try {
     const lead = await prisma.lead.create({
       data: {
-        nome: data.nome,
-        empresa: data.empresa || '',
-        email: data.email || '',
-        telefone: data.telefone || '',
-        status: data.status || 'Novo',
-        origem: data.origem || 'Direto'
+        name: data.name,
+        company: data.company || null,
+        email: data.email || null,
+        phone: data.phone || null,
+        status: data.status || 'NEW',
+        source: data.source || 'DIRECT'
       }
     });
     revalidatePath('/leads');

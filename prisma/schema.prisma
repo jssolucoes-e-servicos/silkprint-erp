@@ -7,58 +7,76 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model User {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  email       String       @unique
+  password    String
+  permissions Permission[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Permission {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String @db.ObjectId
+  user     User   @relation(fields: [userId], references: [id])
+  resource String // e.g., "QUOTE", "PRODUCT"
+  action   String // e.g., "READ", "WRITE", "DELETE"
+}
+
 model Lead {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  nome      String
-  empresa   String?
-  telefone  String?
+  name      String
+  company   String?
+  phone     String?
   email     String?
-  status    String   @default("Novo")
-  origem    String?  @default("Direto")
+  status    String   @default("NEW") // NEW, CONTACTED, QUALIFIED, LOST
+  source    String?  @default("DIRECT")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Orcamento {
+model Quote {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  cliente    String
-  documento  String?
-  telefone   String?
+  clientName String
+  documentId String?
+  phone      String?
   email      String?
-  itens      Json     // Array of { descricao: string, qtd: number, preco: number }
-  valorTotal Float
-  status     String   @default("PENDENTE") // PENDENTE, APROVADO, REJEITADO, CANCELADO
+  items      Json     // Array of { description: string, quantity: number, price: number }
+  totalValue Float
+  status     String   @default("PENDING") // PENDING, APPROVED, REJECTED, CANCELLED
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
 
-model ContasReceber {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  cliente        String
-  descricao      String?
-  valor          Float
-  dataVencimento DateTime
-  status         String   @default("PENDENTE") // PAGO, PENDENTE, REVERTIDO
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+model AccountsReceivable {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  clientName  String
+  description String?
+  value       Float
+  dueDate     DateTime
+  status      String   @default("PENDING") // PAID, PENDING, REVERSED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
-model Cliente {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  nome      String
-  documento String?
-  telefone  String?
-  email     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Customer {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  documentId String?
+  phone      String?
+  email      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
-model Produto {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  nome      String
-  descricao String?
-  precoVenda Float
-  categoria String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Product {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  unitPrice   Float
+  category    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

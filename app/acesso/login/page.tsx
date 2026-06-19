@@ -14,13 +14,16 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [isPending, setIsPending] = useState(false)
   const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsPending(true)
     
     // In a real app, validate password too. Simplified for now
     const result = await login(email, password)
+    setIsPending(false)
     
     if (result.success) {
       toast.success('Login realizado com sucesso!')
@@ -117,8 +120,8 @@ export default function LoginPage() {
                 </Link>
               </div>
 
-              <Button type="submit" className="w-full h-12 text-sm font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(59,130,246,0.4)] hover:shadow-[0_0_25px_rgba(59,130,246,0.6)] transition-all">
-                Entrar no Sistema
+              <Button type="submit" className="w-full h-12 text-sm font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(59,130,246,0.4)] hover:shadow-[0_0_25px_rgba(59,130,246,0.6)] transition-all" disabled={isPending}>
+                {isPending ? 'Entrando...' : 'Entrar no Sistema'}
               </Button>
             </form>
 

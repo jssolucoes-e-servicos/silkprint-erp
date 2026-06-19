@@ -15,12 +15,15 @@ export default function RegisterPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [isPending, setIsPending] = useState(false)
   const router = useRouter()
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsPending(true)
     
     const result = await register({ name, email, password })
+    setIsPending(false)
     
     if (result.success) {
       toast.success('Conta criada com sucesso!')
@@ -70,7 +73,9 @@ export default function RegisterPage() {
                   </button>
                 </div>
               </div>
-              <Button type="submit" className="w-full h-12 bg-blue-600 hover:bg-blue-700">Criar conta</Button>
+              <Button type="submit" className="w-full h-12 bg-blue-600 hover:bg-blue-700" disabled={isPending}>
+                {isPending ? 'Criando conta...' : 'Criar conta'}
+              </Button>
             </form>
             <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
               Já tem uma conta? <Link href="/acesso/login" className="text-blue-600 font-semibold">Entrar</Link>

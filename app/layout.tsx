@@ -1,6 +1,7 @@
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { LayoutWrapper } from '@/components/layout-wrapper';
+import { Toaster } from 'sonner';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -27,6 +28,7 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-background text-foreground min-h-screen">
         <LayoutWrapper>
           {children}
+          <Toaster richColors />
         </LayoutWrapper>
       </body>
     </html>

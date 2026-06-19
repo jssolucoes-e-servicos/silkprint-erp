@@ -6,14 +6,14 @@ import { Header } from '@/components/header';
 
 export function LayoutWrapper({children}: {children: React.ReactNode}) {
   const pathname = usePathname();
-  const isAuthRoute = ['/login', '/recuperar-acesso', '/verificacao'].includes(pathname);
+  const isAuthRoute = pathname.startsWith('/acesso');
 
   if (isAuthRoute) {
-    return <main className="min-h-screen">{children}</main>;
+    return <main className="min-h-screen bg-slate-50 dark:bg-slate-950">{children}</main>;
   }
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Header />

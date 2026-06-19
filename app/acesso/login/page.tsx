@@ -121,7 +121,12 @@ export default function LoginPage() {
               </div>
 
               <Button type="submit" className="w-full h-12 text-sm font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(59,130,246,0.4)] hover:shadow-[0_0_25px_rgba(59,130,246,0.6)] transition-all" disabled={isPending}>
-                {isPending ? 'Entrando...' : 'Entrar no Sistema'}
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Entrando...
+                  </>
+                ) : 'Entrar no Sistema'}
               </Button>
             </form>
 

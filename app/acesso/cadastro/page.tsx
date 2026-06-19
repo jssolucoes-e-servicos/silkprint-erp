@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Printer, Mail, Lock, User, Eye, EyeOff } from 'lucide-react'
+import { Printer, Mail, Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -74,7 +74,12 @@ export default function RegisterPage() {
                 </div>
               </div>
               <Button type="submit" className="w-full h-12 bg-blue-600 hover:bg-blue-700" disabled={isPending}>
-                {isPending ? 'Criando conta...' : 'Criar conta'}
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Salvando...
+                  </>
+                ) : 'Criar conta'}
               </Button>
             </form>
             <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
